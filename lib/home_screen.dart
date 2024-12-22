@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final forecast = weatherRepository.hourlyForecast;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Weather App")),
+      appBar: AppBar(title: const Text("NeoWeather")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

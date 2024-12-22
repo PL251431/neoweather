@@ -20,7 +20,7 @@ class WeatherApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Weather App',
+      title: 'NeoWeather',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomeScreen(),
     );
