@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
+//teste
   Widget _buildDailyForecast(BuildContext context, List<dynamic> forecast) {
     final screenWidth = MediaQuery.of(context).size.width;
 
