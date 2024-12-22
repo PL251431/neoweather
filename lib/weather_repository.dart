@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'weather_service.dart';
 
+
 class WeatherRepository extends ChangeNotifier {
   Map<String, dynamic>? currentWeather;
-  List<dynamic>? hourlyForecast;
+  List<dynamic>? dailyForecast;
 
   Future<void> fetchWeather(String city) async {
     try {
@@ -17,19 +18,19 @@ class WeatherRepository extends ChangeNotifier {
         'iconUrl': "https:${weatherData['current']['condition']['icon']}",
       };
 
-      hourlyForecast = weatherData['forecast']['forecastday'][0]['hour']
-          .map((hour) => {
-                'time': hour['time'].split(' ')[1],
-                'temperature': "${hour['temp_c']}°C",
-                'condition': hour['condition']['text'],
-                'iconUrl': "https:${hour['condition']['icon']}",
+      dailyForecast = weatherData['forecast']['forecastday']
+          .map((day) => {
+                'date': day['date'],
+                'temperature': "${day['day']['avgtemp_c']}°C",
+                'condition': day['day']['condition']['text'],
+                'iconUrl': "https:${day['day']['condition']['icon']}",
               })
           .toList();
 
       notifyListeners();
     } catch (_) {
       currentWeather = null;
-      hourlyForecast = null;
+      dailyForecast = null;
       notifyListeners();
     }
   }

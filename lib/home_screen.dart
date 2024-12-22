@@ -16,10 +16,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final weatherRepository = Provider.of<WeatherRepository>(context);
     final currentWeather = weatherRepository.currentWeather;
-    final forecast = weatherRepository.hourlyForecast;
+    final forecast = weatherRepository.dailyForecast;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("NeoWeather")),
+      appBar: AppBar(title: const Text("Weather App")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16.0),
               if (currentWeather != null) _buildWeatherCard(context, currentWeather),
               const SizedBox(height: 16.0),
-              if (forecast != null) _buildHourlyForecast(context, forecast),
+              if (forecast != null) _buildDailyForecast(context, forecast),
             ],
           ),
         ),
@@ -99,62 +99,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHourlyForecast(BuildContext context, List<dynamic> forecast) {
+  Widget _buildDailyForecast(BuildContext context, List<dynamic> forecast) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
-    return SizedBox(
-      height: screenHeight * 0.25,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: forecast.length,
-        itemBuilder: (context, index) {
-          final hourData = forecast[index];
-          return Container(
-            width: screenWidth * 0.3,
-            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.network(
-                      hourData['iconUrl'],
-                      width: 50,
-                      height: 50,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      hourData['time'],
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Text(
-                      hourData['temperature'],
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    Text(
-                      hourData['condition'],
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: forecast.map((day) {
+        return Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: ListTile(
+            leading: Image.network(day['iconUrl'], width: 50, height: 50),
+            title: Text("${day['date']}: ${day['temperature']}°C"),
+            subtitle: Text(day['condition']),
+          ),
+        );
+      }).toList(),
     );
   }
 }
