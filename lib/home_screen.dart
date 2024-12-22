@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8.0),
             Text(
-              weatherData['condition'],
+              _translateCondition(weatherData['condition']),
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
                 fontStyle: FontStyle.italic,
@@ -110,10 +110,31 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListTile(
             leading: Image.network(day['iconUrl'], width: 50, height: 50),
             title: Text("${day['date']}: ${day['temperature']}°C"),
-            subtitle: Text(day['condition']),
+            subtitle: Text(_translateCondition(day['condition'])),
           ),
         );
       }).toList(),
     );
+  }
+
+  String _translateCondition(String condition) {
+    switch (condition.toLowerCase()) {
+      case 'sunny':
+        return 'Ensolarado';
+      case 'partly cloudy':
+        return 'Parcialmente Nublado';
+      case 'cloudy':
+        return 'Nublado';
+      case 'rainy':
+        return 'Chuvoso';
+      case 'stormy':
+        return 'Tempestuoso';
+      case 'snowy':
+        return 'Nevando';
+      case 'clear':
+        return 'Limpo';
+      default:
+        return condition;
+    }
   }
 }
