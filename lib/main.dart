@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'weather_service.dart';
+import 'weather_repository.dart';
 
 void main() {
-  runApp(const WeatherApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => WeatherRepository()),
+      ],
+      child: const WeatherApp(),
+    ),
+  );
 }
 
 class WeatherApp extends StatelessWidget {
@@ -22,45 +31,19 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final WeatherService weatherService = WeatherService();
   final TextEditingController cityController = TextEditingController();
-
-  String? cityName;
-  String? temperature;
-  String? condition;
-  String? iconUrl;
-  List<dynamic>? hourlyForecast;
-
-  void fetchWeather() async {
-    final String city = cityController.text;
-
-    try {
-      final weatherData = await weatherService.getWeather(city);
-
-      setState(() {
-        cityName = weatherData['location']['name'];
-        temperature = "${weatherData['current']['temp_c']}°C";
-        condition = weatherData['current']['condition']['text'];
-        iconUrl = "https:${weatherData['current']['condition']['icon']}";
-        hourlyForecast = weatherData['forecast']['forecastday'][0]['hour'];
-      });
-    } catch (_) {
-      setState(() {
-        cityName = null;
-        temperature = null;
-        condition = "Erro ao buscar dados";
-        iconUrl = null;
-        hourlyForecast = null;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final weatherRepository = Provider.of<WeatherRepository>(context);
+    final currentWeather = weatherRepository.currentWeather;
+    final forecast = weatherRepository.hourlyForecast;
+
     return Scaffold(
       appBar: AppBar(title: const Text("Weather App")),
       body: SingleChildScrollView(
@@ -71,11 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildCityInputField(),
               const SizedBox(height: 16.0),
-              _buildSearchButton(),
+              _buildSearchButton(weatherRepository),
               const SizedBox(height: 16.0),
-              if (cityName != null) _buildWeatherCard(context),
+              if (currentWeather != null) _buildWeatherCard(context, currentWeather),
               const SizedBox(height: 16.0),
-              if (hourlyForecast != null) _buildHourlyForecast(context),
+              if (forecast != null) _buildHourlyForecast(context, forecast),
             ],
           ),
         ),
@@ -93,14 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSearchButton() {
+  Widget _buildSearchButton(WeatherRepository repository) {
     return ElevatedButton(
-      onPressed: fetchWeather,
+      onPressed: () => repository.fetchWeather(cityController.text),
       child: const Text("Buscar Clima"),
     );
   }
 
-  Widget _buildWeatherCard(BuildContext context) {
+  Widget _buildWeatherCard(BuildContext context, Map<String, dynamic> weatherData) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Card(
@@ -112,17 +95,17 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              cityName!,
+              weatherData['cityName'],
               style: TextStyle(
                 fontSize: screenWidth * 0.07,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8.0),
-            Image.network(iconUrl!, width: screenWidth * 0.2, height: screenWidth * 0.2),
+            Image.network(weatherData['iconUrl'], width: screenWidth * 0.2, height: screenWidth * 0.2),
             const SizedBox(height: 8.0),
             Text(
-              temperature!,
+              weatherData['temperature'],
               style: TextStyle(
                 fontSize: screenWidth * 0.1,
                 fontWeight: FontWeight.bold,
@@ -130,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8.0),
             Text(
-              condition!,
+              weatherData['condition'],
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
                 fontStyle: FontStyle.italic,
@@ -142,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHourlyForecast(BuildContext context) {
+  Widget _buildHourlyForecast(BuildContext context, List<dynamic> forecast) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -150,9 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
       height: screenHeight * 0.25,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: hourlyForecast!.length,
+        itemCount: forecast.length,
         itemBuilder: (context, index) {
-          final hourData = hourlyForecast![index];
+          final hourData = forecast[index];
           return Container(
             width: screenWidth * 0.3,
             margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -166,13 +149,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
-                      "https:${hourData['condition']['icon']}",
+                      hourData['iconUrl'],
                       width: 50,
                       height: 50,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      "${hourData['time'].split(' ')[1]}",
+                      hourData['time'],
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -180,11 +163,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      "${hourData['temp_c']}°C",
+                      hourData['temperature'],
                       style: const TextStyle(fontSize: 12),
                     ),
                     Text(
-                      hourData['condition']['text'],
+                      hourData['condition'],
                       style: const TextStyle(
                         fontSize: 10,
                         fontStyle: FontStyle.italic,
@@ -199,5 +182,39 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+}
+
+class WeatherRepository extends ChangeNotifier {
+  Map<String, dynamic>? currentWeather;
+  List<dynamic>? hourlyForecast;
+
+  Future<void> fetchWeather(String city) async {
+    try {
+      final weatherService = WeatherService();
+      final weatherData = await weatherService.getWeather(city);
+
+      currentWeather = {
+        'cityName': weatherData['location']['name'],
+        'temperature': "${weatherData['current']['temp_c']}°C",
+        'condition': weatherData['current']['condition']['text'],
+        'iconUrl': "https:${weatherData['current']['condition']['icon']}",
+      };
+
+      hourlyForecast = weatherData['forecast']['forecastday'][0]['hour']
+          .map((hour) => {
+                'time': hour['time'].split(' ')[1],
+                'temperature': "${hour['temp_c']}°C",
+                'condition': hour['condition']['text'],
+                'iconUrl': "https:${hour['condition']['icon']}",
+              })
+          .toList();
+
+      notifyListeners();
+    } catch (_) {
+      currentWeather = null;
+      hourlyForecast = null;
+      notifyListeners();
+    }
   }
 }
