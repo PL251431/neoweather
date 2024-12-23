@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final forecast = weatherRepository.dailyForecast;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Weather App")),
+      appBar: AppBar(title: const Text("NeoWeather")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8.0),
             Text(
-              _translateCondition(weatherData['condition']),
+              weatherData['condition'], 
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
                 fontStyle: FontStyle.italic,
@@ -98,10 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-//teste
-  Widget _buildDailyForecast(BuildContext context, List<dynamic> forecast) {
-    final screenWidth = MediaQuery.of(context).size.width;
 
+  Widget _buildDailyForecast(BuildContext context, List<dynamic> forecast) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: forecast.map((day) {
@@ -109,32 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           child: ListTile(
             leading: Image.network(day['iconUrl'], width: 50, height: 50),
-            title: Text("${day['date']}: ${day['temperature']}°C"),
-            subtitle: Text(_translateCondition(day['condition'])),
+            title: Text("${day['date']}: ${day['temperature']}"),
+            subtitle: Text(day['condition']), 
           ),
         );
       }).toList(),
     );
-  }
-
-  String _translateCondition(String condition) {
-    switch (condition.toLowerCase()) {
-      case 'sunny':
-        return 'Ensolarado';
-      case 'partly cloudy':
-        return 'Parcialmente Nublado';
-      case 'cloudy':
-        return 'Nublado';
-      case 'rainy':
-        return 'Chuvoso';
-      case 'stormy':
-        return 'Tempestuoso';
-      case 'snowy':
-        return 'Nevando';
-      case 'clear':
-        return 'Limpo';
-      default:
-        return condition;
-    }
   }
 }
