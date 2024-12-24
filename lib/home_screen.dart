@@ -7,7 +7,6 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -55,13 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
       controller: cityController,
       decoration: InputDecoration(
         labelText: "Digite o nome da cidade",
-        labelStyle:
-            TextStyle(color: Colors.blueAccent), // Estilo do texto do label
+        labelStyle: TextStyle(color: Colors.blueAccent),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
-        prefixIcon: Icon(Icons.location_city,
-            color: Colors.blueAccent), // Ícone à esquerda
+        prefixIcon: Icon(Icons.location_city, color: Colors.blueAccent),
       ),
     );
   }
@@ -74,13 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blueAccent, // Substitui `primary`
-        foregroundColor: Colors.white, // Cor do texto do botão
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0), // Bordas arredondadas
+          borderRadius: BorderRadius.circular(30.0),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-        elevation: 5, // Sombra do botão
+        elevation: 5,
       ),
       child: Text(
         "Buscar Clima",
@@ -92,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildLoadingIndicator() {
     return const CircularProgressIndicator(
       valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-      strokeWidth: 5.0, // Espessura do indicador
+      strokeWidth: 5.0,
     );
   }
 
@@ -109,9 +106,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Card(
       shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(20.0)), // Bordas mais arredondadas
-      elevation: 10, // Sombra suave
+          borderRadius: BorderRadius.circular(20.0)),
+      elevation: 10,
       shadowColor: Colors.black.withOpacity(0.2),
       child: Padding(
         padding: EdgeInsets.all(screenWidth * 0.05),
@@ -155,8 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: forecast.map((day) {
         return Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           child: ListTile(
             leading: Image.network(day['iconUrl'], width: 50, height: 50),
             title: Text(

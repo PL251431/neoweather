@@ -4,8 +4,8 @@ import 'weather_service.dart';
 class WeatherRepository extends ChangeNotifier {
   Map<String, dynamic>? currentWeather;
   List<dynamic>? dailyForecast;
-  String? errorMessage; // Mensagem de erro
-  bool isLoading = false; // Estado de carregamento
+  String? errorMessage;
+  bool isLoading = false;
 
   String _translateCondition(String condition) {
     switch (condition.toLowerCase().trim()) {

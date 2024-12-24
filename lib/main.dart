@@ -24,18 +24,17 @@ class WeatherApp extends StatelessWidget {
       title: 'NeoWeather',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue, // Cor principal
-        scaffoldBackgroundColor: Colors.blue[50], // Cor de fundo da tela
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.blue[50],
         textTheme: GoogleFonts.robotoTextTheme(
-          // Definindo a tipografia
           Theme.of(context).textTheme,
         ),
         buttonTheme: ButtonThemeData(
-          buttonColor: Colors.blueAccent, // Cor do botão
+          buttonColor: Colors.blueAccent,
           textTheme: ButtonTextTheme.primary,
         ),
         appBarTheme: AppBarTheme(
-          color: Colors.blue[800], // Cor da AppBar
+          color: Colors.blue[800],
           titleTextStyle:
               GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.bold),
         ),
