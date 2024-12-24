@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../weather_repository.dart';
-import 'widgets/input_field.dart';
-import 'widgets/loading_indicator.dart';
-import 'widgets/weather_card.dart';
-import 'widgets/daily_forecast.dart';
+import '../../weather_repository.dart';
+import '../widgets/input_field.dart';
+import '../widgets/loading_indicator.dart';
+import '../widgets/weather_card.dart';
+import '../widgets/daily_forecast.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

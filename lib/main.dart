@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'weather_repository.dart';
-import 'home_screen.dart';
+import 'screen/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
